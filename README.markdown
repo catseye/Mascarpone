@@ -1,8 +1,8 @@
 The Mascarpone Programming Language
 ===================================
 
-Language version 1.0. Distribution version 2007.1208.\
- Chris Pressey, Cat's Eye Technologies
+Language version 1.0. Distribution version 2007.1208.  
+Chris Pressey, Cat's Eye Technologies
 
 *You are lost in a twisty maze of meta-circular interpreters, all
 alike.*
@@ -11,17 +11,17 @@ Introduction
 ------------
 
 Mascarpone is a self-modifying programming language in the style of
-[Emmental](/projects/emmental/). In fact it is a rationalization and
-further exploration of some of the basic ideas behind Emmental. In
-Mascarpone, meta-circular interpreters are "first-class objects": they
-can be pushed onto the stack, have operations extracted from and
-installed into them, and can themselves be meta-circularly extracted
-from the language environment ("reified") or installed into it
-("deified.") New operations can be defined as strings of symbols, and
-these symbols are given meaning by an interpreter that is "captured" in
-the definition, similar to the way that lexical variables are captured
-in closures in functional languages. An operation may also access, and
-modify, the interpreter that invoked it.
+[Emmental](http://catseye.tc/projects/emmental/). In fact it is a
+rationalization and further exploration of some of the basic ideas
+behind Emmental. In Mascarpone, meta-circular interpreters are
+"first-class objects": they can be pushed onto the stack, have
+operations extracted from and installed into them, and can themselves be
+meta-circularly extracted from the language environment ("reified") or
+installed into it ("deified.") New operations can be defined as strings
+of symbols, and these symbols are given meaning by an interpreter that
+is "captured" in the definition, similar to the way that lexical
+variables are captured in closures in functional languages. An operation
+may also access, and modify, the interpreter that invoked it.
 
 Like Emmental, Mascarpone relies on meta-circular
 interpreter-modification to achieve Turing-completeness. Unlike
@@ -238,7 +238,7 @@ deficiency, I hardly consider it a show-stopper.
 
 ### Related Work
 
-There are definately two related works that are worth mentioning: Brian
+There are definitely two related works that are worth mentioning: Brian
 Cantwell Smith's Ph.D. thesis "Procedural Reflection in Programming
 Languages" (MIT, 1982,) and Friedman and Wand's paper "Reification:
 Reflection without Metaphysics" (ACM LISP conference, 1984.) (Forgive me
@@ -280,7 +280,7 @@ one-symbol-one-operation correspondence.
 
 Because Mascarpone has interpreters as first-class values, it is never
 obliged to make the guts of the running interpreter explicit during
-reification, it just needs to make that interpreter available as a
+reification — it just needs to make that interpreter available as a
 value. The contract of the `@` operation (which, by the way, was a
 somewhat late add to the language design, fulfilling the desire for a
 dual to `*`) says you get a program and an interpreter with semantics
@@ -319,7 +319,7 @@ there is a `main` function that runs `mascarpone` on a string read from
 a file named by the first argument, so a Haskell compiler can be used to
 build a stand-alone Mascarpone interpreter from this source code.
 
-Even happier interpreter-redefining! \
-Chris Pressey \
-Chicago, IL \
+Even happier interpreter-redefining!  
+Chris Pressey  
+Chicago, IL  
 December 8, 2007
