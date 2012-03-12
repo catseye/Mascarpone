@@ -1,7 +1,7 @@
 The Mascarpone Programming Language
 ===================================
 
-Language version 1.0. Distribution version 2007.1208.  
+Language version 1.0. Distribution version 2012.0312.  
 Chris Pressey, Cat's Eye Technologies
 
 *You are lost in a twisty maze of meta-circular interpreters, all
