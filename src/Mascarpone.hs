@@ -1,5 +1,5 @@
 --
--- Copyright (c)2007 Chris Pressey, Cat's Eye Technologies.
+-- Copyright (c)2007-2014 Chris Pressey, Cat's Eye Technologies.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 -- v1.0
 --
 
-import System
+module Mascarpone where
 
 import qualified Data.Map as Map
 import qualified Data.Char as Char
@@ -646,16 +646,6 @@ mascarpone string =
 
 debug string =
     runWith string stdDebugger
-
-
------------------------------------------------------------------------
--- ========================== Main Program ========================= --
------------------------------------------------------------------------
-
-main = do
-    [inputFilename] <- getArgs
-    inputProgram <- readFile inputFilename
-    return (mascarpone inputProgram)
 
 
 -----------------------------------------------------------------------
