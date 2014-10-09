@@ -22,13 +22,13 @@ Test nesting quotes.
     | [o[ll]eh].........
     = ]he]ll[o[
 
-Make a new operation, defined as ",.", and execute it.
+Make a new operation, defined as `,.`, and execute it.
 
     | [,.]v*!
     + Z
     = Z
 
-Redefine "&" as ",." in the current interpreter, and try it.
+Redefine `&` as `,.` in the current interpreter, and try it.
 
     | v[,.]v*'&<^&&&
     + Zil
@@ -67,10 +67,10 @@ Then we are ready to make the operation.
     | v['[/''/']v*]v*'?<^'p?!.
     = p
 
-Treat an interpreter as a store.  Define S to mean,
+Treat an interpreter as a store.  Define `S` to mean,
 pop a symbol, a value, and an interpreter, and push a new
 interpreter where the symbol means "push that value."
-Then define F to mean, pop a symbol and an interpreter,
+Then define `F` to mean, pop a symbol and an interpreter,
 then extract the operation so named and run it (pushing
 the value stored.)
 
@@ -78,16 +78,19 @@ the value stored.)
     = p
 
 Get whatever definition the interpreter sees fit to give
-us for a symbol input from the user, and output it.
-We define '?' as above first, and for the most interesting
-output (with this particular implementation ;) the user
-should enter '?' when the time comes for ',' to execute...
+us for a symbol input from the user, and output it.  We
+define `?` as above, and then inquire as to the definition
+of `?`.
+
+(Note that the reified definitions of symbols are implementation-
+specific, and therefore that this test is *non*-normative with
+respect to the Mascarpone language itself.)
 
     | v['[/''/']v*]v*'?<^v,>@$............
     + ?
     = ]*v]'/''/['[
 
-Demonstrates how one can use * after @.
+Demonstrate how one can use `*` after `@`.
 
     | v['[/''/']v*]v*'?<^vv'?>@$v*'?<^'k?!.
     = k
