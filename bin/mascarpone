@@ -1,0 +1,18 @@
+#!/bin/sh
+
+THIS=`realpath $0`
+DIR=`dirname $THIS`
+NAME=`basename $THIS`
+SRC=$DIR/../src
+if [ "x$FORCE_HUGS" != "x" ] ; then
+    exec runhugs -i$SRC $SRC/Main.hs $*
+elif [ -x $DIR/$NAME.exe ] ; then
+    exec $DIR/$NAME.exe $*
+elif command -v runhaskell 2>&1 >/dev/null ; then
+    exec runhaskell -i$SRC $SRC/Main.hs $*
+elif command -v runhugs 2>&1 >/dev/null ; then
+    exec runhugs -i$SRC $SRC/Main.hs $*
+else
+    echo "Cannot run $NAME; neither $NAME.exe, nor runhaskell, nor runhugs found."
+    exit 1
+fi

@@ -1,3 +1,5 @@
 *.hi
 *.o
-bin/*
+*.jsmod
+demo/mascarpone.js
+bin/*.exe
