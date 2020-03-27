@@ -75,7 +75,6 @@ showStack [] = ""
 showStack ((Symbol sym):tail) = "'" ++ [sym] ++ "' " ++ (showStack tail)
 showStack ((Operation op):tail) = (show op) ++ " " ++ (showStack tail)
 showStack ((Interpreter i):tail) = (show i) ++ " " ++ (showStack tail)
-showStack (head:tail) = (show head) ++ " " ++ (showStack tail)
 
 pop (Stack (head:tail)) = (head, Stack tail)
 push (Stack tail) head  = (Stack (head:tail))
@@ -453,9 +452,9 @@ opCreateOp state =
 opExpandOp state =
     let
         ((Operation op), state') = statePop state
-	(prog, interp) = expandOp op
+        (prog, interp) = expandOp op
         state'' = statePushString state' prog
-	state''' = statePush state'' (Interpreter interp)
+        state''' = statePush state'' (Interpreter interp)
     in
         do return state'''
 
@@ -492,9 +491,9 @@ opDuplicate state =
 opSwap state =
     let
         (elem_top, state') = statePop state
-	(elem_bot, state'') = statePop state'
-	state''' = statePush state'' elem_top
-	state'''' = statePush state''' elem_bot
+        (elem_bot, state'') = statePop state'
+        state''' = statePush state'' elem_top
+        state'''' = statePush state''' elem_bot
     in
         do return state''''
 
