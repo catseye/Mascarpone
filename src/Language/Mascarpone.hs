@@ -1,5 +1,5 @@
 --
--- Copyright (c)2007-2014 Chris Pressey, Cat's Eye Technologies.
+-- Copyright (c)2007-2020 Chris Pressey, Cat's Eye Technologies.
 -- All rights reserved.
 --
 -- Redistribution and use in source and binary forms, with or without
@@ -31,15 +31,14 @@
 --
 
 --
--- mascarpone.hs v2007.1208
--- $Id: mascarpone.hs 16 2007-12-09 00:20:53Z catseye $
+-- mascarpone.hs v2020.smth
 --
 -- Reference interpreter for
 -- The Mascarpone Programming Language
 -- v1.0
 --
 
-module Mascarpone where
+module Language.Mascarpone where
 
 import qualified Data.Map as Map
 import qualified Data.Char as Char

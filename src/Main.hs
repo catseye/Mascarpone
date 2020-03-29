@@ -1,7 +1,7 @@
 module Main where
 
 import System.Environment
-import Mascarpone
+import Language.Mascarpone (mascarpone, debug, State(State))
 
 showState (State s _ _) = (show s)
 
