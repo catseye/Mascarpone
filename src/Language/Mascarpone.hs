@@ -110,27 +110,37 @@ popString' (Stack ((Symbol head):tail)) level =
 -- ======================== Program States ========================= --
 -----------------------------------------------------------------------
 
-data State = State Stack Interpreter Debugger
+data State = State {
+    stack :: Stack,
+    interpreter :: Interpreter,
+    debugger :: Debugger,
+    getCh :: IO Char,
+    putCh :: Char -> IO ()
+}
 
-getInterpreter (State _ i _) = i
-setInterpreter (State s _ d) i = State s i d
 
-statePush (State s i d) head = State (push s head) i d
-statePushString (State s i d) str = State (pushString s str) i d
 
-statePop  (State s i d) =
+getInterpreter State{ interpreter=i } = i
+setInterpreter state i = state{ interpreter=i }
+
+getStack State{ stack=s } = s
+
+statePush st@State{ stack=s } head = st{ stack=(push s head) }
+statePushString st@State{ stack=s } str = st{ stack=(pushString s str) }
+
+statePop st@State{ stack=s } =
     let
         (elem, s') = pop s
     in
-        (elem, (State s' i d))
-statePopString (State s i d) =
+        (elem, st{ stack=s' })
+statePopString st@State{ stack=s } =
     let
         (string, s') = popString s
     in
-        (string, (State s' i d))
+        (string, st{ stack=s' })
 
-stateDebug program state@(State _ _ debugger) =
-    debugger program state
+stateDebug program st@State{ debugger=debugger } =
+    debugger program st
 
 
 -----------------------------------------------------------------------
@@ -587,12 +597,12 @@ type Debugger = [Symbol] -> State -> IO ()
 nullDebugger p s = do
     return ()
 
-stdDebugger program@(instr:rest) (State s i d) = do
+stdDebugger program@(instr:rest) state = do
     putStr "\n"
     putStr ("Instr:  " ++ [instr] ++ "\n")
     putStr ("Rest:   " ++ rest ++ "\n")
-    putStr ("Stack:  " ++ (show s) ++ "\n")
-    putStr ("Interp: " ++ (show i) ++ "\n")
+    putStr ("Stack:  " ++ (show (stack state)) ++ "\n")
+    putStr ("Interp: " ++ (show (interpreter state)) ++ "\n")
     putStr "(press ENTER) "
     control <- getChar
     return ()
@@ -633,9 +643,9 @@ initialInterpreter = Interp
   (Intrinsic ' ' opNop)
   NoInterp
 
-runWith string debugger =
+runWith string dbgr =
     let
-        initialState = (State (Stack []) NoInterp debugger)
+        initialState = State{ stack=(Stack []), interpreter=NoInterp, debugger=dbgr, getCh=getChar, putCh=putChar }
     in
         execute (Program string initialInterpreter) initialState
 
