@@ -511,14 +511,14 @@ opSwap state =
 --
 
 opInput state = do
-    symbol <- getChar
+    symbol <- getCh state
     return (statePush state (Symbol symbol))
 
 opOutput state =
     let
         ((Symbol symbol), state') = statePop state
     in do
-        putChar symbol
+        putCh state symbol
         return state'
 
 --
@@ -604,7 +604,7 @@ stdDebugger program@(instr:rest) state = do
     putStr ("Stack:  " ++ (show (stack state)) ++ "\n")
     putStr ("Interp: " ++ (show (interpreter state)) ++ "\n")
     putStr "(press ENTER) "
-    control <- getChar
+    control <- getCh state
     return ()
 
 
