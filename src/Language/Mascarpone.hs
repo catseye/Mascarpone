@@ -643,17 +643,19 @@ initialInterpreter = Interp
   (Intrinsic ' ' opNop)
   NoInterp
 
-runWith string dbgr =
-    let
-        initialState = State{ stack=(Stack []), interpreter=NoInterp, debugger=dbgr, getCh=getChar, putCh=putChar }
-    in
-        execute (Program string initialInterpreter) initialState
+initialState = State{ stack=(Stack []), interpreter=NoInterp, debugger=nullDebugger, getCh=getChar, putCh=putChar }
+
+runWith string state =
+    execute (Program string initialInterpreter) state
 
 mascarpone string =
-    runWith string nullDebugger
+    runWith string initialState
+
+mascarponeWithIO getCh putCh string =
+    runWith string initialState{ getCh=getCh, putCh=putCh }
 
 debug string =
-    runWith string stdDebugger
+    runWith string initialState{ debugger=stdDebugger }
 
 
 -----------------------------------------------------------------------
