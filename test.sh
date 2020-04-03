@@ -2,4 +2,4 @@
 
 ./build.sh || exit 1
 
-falderal --substring-error tests/Mascarpone.markdown
+falderal --substring-error tests/Mascarpone.md

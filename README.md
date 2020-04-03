@@ -1,8 +1,11 @@
 The Mascarpone Programming Language
 ===================================
 
-Language version 1.0. Distribution version 2012.0312.  
-Chris Pressey, Cat's Eye Technologies
+_Try it online_ [@ catseye.tc](https://catseye.tc/installation/Mascarpone)
+| _Wiki entry_ [@ esolangs.org](https://esolangs.org/wiki/Mascarpone)
+| _See also:_ [Mascarpone](https://github.com/catseye/Emmental)
+
+- - - -
 
 *You are lost in a twisty maze of meta-circular interpreters, all
 alike.*
@@ -11,7 +14,7 @@ Introduction
 ------------
 
 Mascarpone is a self-modifying programming language in the style of
-[Emmental](http://catseye.tc/projects/emmental/). In fact it is a
+[Emmental](http://catseye.tc/node/Emmental/). In fact it is a
 rationalization and further exploration of some of the basic ideas
 behind Emmental. In Mascarpone, meta-circular interpreters are
 "first-class objects": they can be pushed onto the stack, have

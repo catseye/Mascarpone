@@ -1,9 +1,7 @@
 module Main where
 
 import System.Environment
-import Mascarpone
-
-showState (State s _ _) = (show s)
+import Language.Mascarpone (mascarpone, debug, getStack)
 
 main = do
     args <- getArgs
@@ -19,6 +17,6 @@ main = do
         ["-r", fileName] -> do
             c <- readFile fileName
             r <- mascarpone c
-            putStrLn (showState r)
+            putStrLn $ show $ getStack r
         _ -> do
             putStrLn "Usage: mascarpone [-d|-r] <filename.mascarpone>"

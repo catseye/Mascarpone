@@ -1,45 +1,15 @@
 --
--- Copyright (c)2007-2014 Chris Pressey, Cat's Eye Technologies.
--- All rights reserved.
---
--- Redistribution and use in source and binary forms, with or without
--- modification, are permitted provided that the following conditions
--- are met:
---
---   1. Redistributions of source code must retain the above copyright
---      notices, this list of conditions and the following disclaimer.
---   2. Redistributions in binary form must reproduce the above copyright
---      notices, this list of conditions, and the following disclaimer in
---      the documentation and/or other materials provided with the
---      distribution.
---   3. Neither the names of the copyright holders nor the names of their
---      contributors may be used to endorse or promote products derived
---      from this software without specific prior written permission. 
---
--- THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
--- ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES INCLUDING, BUT NOT
--- LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
--- FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE
--- COPYRIGHT HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
--- INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
--- BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
--- LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
--- CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
--- LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
--- ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
--- POSSIBILITY OF SUCH DAMAGE.
---
-
---
--- mascarpone.hs v2007.1208
--- $Id: mascarpone.hs 16 2007-12-09 00:20:53Z catseye $
+-- mascarpone.hs v2020.0403
 --
 -- Reference interpreter for
 -- The Mascarpone Programming Language
 -- v1.0
 --
+-- This work is in the public domain.  See the file UNLICENSE in the
+-- root directory of the Mascarpone distribution for more details.
+--
 
-module Mascarpone where
+module Language.Mascarpone where
 
 import qualified Data.Map as Map
 import qualified Data.Char as Char
@@ -75,7 +45,6 @@ showStack [] = ""
 showStack ((Symbol sym):tail) = "'" ++ [sym] ++ "' " ++ (showStack tail)
 showStack ((Operation op):tail) = (show op) ++ " " ++ (showStack tail)
 showStack ((Interpreter i):tail) = (show i) ++ " " ++ (showStack tail)
-showStack (head:tail) = (show head) ++ " " ++ (showStack tail)
 
 pop (Stack (head:tail)) = (head, Stack tail)
 push (Stack tail) head  = (Stack (head:tail))
@@ -112,27 +81,37 @@ popString' (Stack ((Symbol head):tail)) level =
 -- ======================== Program States ========================= --
 -----------------------------------------------------------------------
 
-data State = State Stack Interpreter Debugger
+data State = State {
+    stack :: Stack,
+    interpreter :: Interpreter,
+    debugger :: Debugger,
+    getCh :: IO Char,
+    putCh :: Char -> IO ()
+}
 
-getInterpreter (State _ i _) = i
-setInterpreter (State s _ d) i = State s i d
 
-statePush (State s i d) head = State (push s head) i d
-statePushString (State s i d) str = State (pushString s str) i d
 
-statePop  (State s i d) =
+getInterpreter State{ interpreter=i } = i
+setInterpreter state i = state{ interpreter=i }
+
+getStack State{ stack=s } = s
+
+statePush st@State{ stack=s } head = st{ stack=(push s head) }
+statePushString st@State{ stack=s } str = st{ stack=(pushString s str) }
+
+statePop st@State{ stack=s } =
     let
         (elem, s') = pop s
     in
-        (elem, (State s' i d))
-statePopString (State s i d) =
+        (elem, st{ stack=s' })
+statePopString st@State{ stack=s } =
     let
         (string, s') = popString s
     in
-        (string, (State s' i d))
+        (string, st{ stack=s' })
 
-stateDebug program state@(State _ _ debugger) =
-    debugger program state
+stateDebug program st@State{ debugger=debugger } =
+    debugger program st
 
 
 -----------------------------------------------------------------------
@@ -453,9 +432,9 @@ opCreateOp state =
 opExpandOp state =
     let
         ((Operation op), state') = statePop state
-	(prog, interp) = expandOp op
+        (prog, interp) = expandOp op
         state'' = statePushString state' prog
-	state''' = statePush state'' (Interpreter interp)
+        state''' = statePush state'' (Interpreter interp)
     in
         do return state'''
 
@@ -492,9 +471,9 @@ opDuplicate state =
 opSwap state =
     let
         (elem_top, state') = statePop state
-	(elem_bot, state'') = statePop state'
-	state''' = statePush state'' elem_top
-	state'''' = statePush state''' elem_bot
+        (elem_bot, state'') = statePop state'
+        state''' = statePush state'' elem_top
+        state'''' = statePush state''' elem_bot
     in
         do return state''''
 
@@ -503,14 +482,14 @@ opSwap state =
 --
 
 opInput state = do
-    symbol <- getChar
+    symbol <- getCh state
     return (statePush state (Symbol symbol))
 
 opOutput state =
     let
         ((Symbol symbol), state') = statePop state
     in do
-        putChar symbol
+        putCh state symbol
         return state'
 
 --
@@ -589,14 +568,14 @@ type Debugger = [Symbol] -> State -> IO ()
 nullDebugger p s = do
     return ()
 
-stdDebugger program@(instr:rest) (State s i d) = do
+stdDebugger program@(instr:rest) state = do
     putStr "\n"
     putStr ("Instr:  " ++ [instr] ++ "\n")
     putStr ("Rest:   " ++ rest ++ "\n")
-    putStr ("Stack:  " ++ (show s) ++ "\n")
-    putStr ("Interp: " ++ (show i) ++ "\n")
+    putStr ("Stack:  " ++ (show (stack state)) ++ "\n")
+    putStr ("Interp: " ++ (show (interpreter state)) ++ "\n")
     putStr "(press ENTER) "
-    control <- getChar
+    control <- getCh state
     return ()
 
 
@@ -635,17 +614,19 @@ initialInterpreter = Interp
   (Intrinsic ' ' opNop)
   NoInterp
 
-runWith string debugger =
-    let
-        initialState = (State (Stack []) NoInterp debugger)
-    in
-        execute (Program string initialInterpreter) initialState
+initialState = State{ stack=(Stack []), interpreter=NoInterp, debugger=nullDebugger, getCh=getChar, putCh=putChar }
+
+runWith string state =
+    execute (Program string initialInterpreter) state
 
 mascarpone string =
-    runWith string nullDebugger
+    runWith string initialState
+
+mascarponeWithIO getCh putCh string =
+    runWith string initialState{ getCh=getCh, putCh=putCh }
 
 debug string =
-    runWith string stdDebugger
+    runWith string initialState{ debugger=stdDebugger }
 
 
 -----------------------------------------------------------------------
